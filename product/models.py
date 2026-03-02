@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название категории')
@@ -20,9 +21,20 @@ class Product(models.Model):
     
     def __str__(self):
         return self.title
+    
+    def average_rating(self):
+        reviews = self.reviews.all()
+        if reviews:
+            return sum(review.stars for review in reviews) / reviews.count()
+        return 0
 
 class Review(models.Model):
     text = models.TextField(verbose_name='Текст отзыва')
+    stars = models.IntegerField(
+        verbose_name='Рейтинг',
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        help_text='Оценка от 1 до 5'
+    )
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews', verbose_name='Товар')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     class Meta:
@@ -30,4 +42,4 @@ class Review(models.Model):
         verbose_name_plural = 'Отзывы'
     
     def __str__(self):
-        return f'Отзыв на {self.product.title}'
+        return f'Отзыв на {self.product.title} - {self.stars}'
