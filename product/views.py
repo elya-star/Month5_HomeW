@@ -49,9 +49,9 @@ def category_detail_api_view(request, id):
 @api_view(['GET', 'POST'])
 def product_list_api_view(request):
     if request.method == 'GET':
-        products = Product.objects.all()
-        data = ProductSerializer(products, many=True).data
-        return Response(data=data, status=status.HTTP_200_OK)
+        categories = Category.objects.all().annotate(products_count=Count('products'))
+        serializer = CategorySerializer(categories, many=True)
+        return Response(data=serializer.data, status=status.HTTP_200_OK)
     
     elif request.method == 'POST':
         serializer = ProductSerializer(data=request.data)
