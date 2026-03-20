@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from product import views
 
 urlpatterns = [
@@ -11,5 +11,6 @@ urlpatterns = [
     path('api/v1/reviews/', views.ReviewListView.as_view()),
     path('api/v1/reviews/<int:id>/', views.ReviewDetailView.as_view()),    
     path('api/v1/products/reviews/', views.ProductsWithReviewsView.as_view()),
+    path('api/v1/users/', include('users.urls')),
 
 ]
